@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加关联角色权限</title>
+    <link rel="stylesheet"   th:href="@{lib/layui-v2.5.5/css/layui.css}"   media="all">
+    <link rel="stylesheet"  th:href="@{css/public.css}"   media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<script th:src="@{lib/layui-v2.5.5/layui.js}"  charset="utf-8"></script>
+<script th:src="@{lib/jquery-3.4.1/jquery-3.4.1.min.js}"  charset="utf-8"></script>
+<input type="hidden" id="roleId" th:value="${roleId}">
+<div id="test12" class="demo-tree-more"></div>
+<div class="layui-btn-contrainer">
+    <button type="button" class="layui-btn layui-btn-sm" lay-demo="getChecked">设置权限</button>
+</div>
+<script>
+    layui.use(['tree', 'util'], function(){
+        //获取树的数据信息
+        var data2=getFormInfo();
+        var tree = layui.tree
+            ,layer = layui.layer
+            ,util = layui.util
+
+            //模拟数据
+            ,data =data2
+
+        //基本演示
+        tree.render({
+            elem: '#test12'
+            ,data: data
+            ,showCheckbox: true  //是否显示复选框
+            ,id: 'demoId1'
+            ,isJump: true //是否允许点击节点时弹出新窗口跳转
+            ,click: function(obj){
+                var data = obj.data;  //获取当前点击的节点数据
+                layer.msg('状态：'+ obj.state + '<br>节点数据：' + JSON.stringify(data));
+            }
+        });
+
+
+        /**
+         * 获取树信息动态
+         */
+        function getFormInfo(){
+            //获取角色的id
+            var roleId=$("#roleId").val();
+            var content={};
+            $.ajax({
+                url:'menu/queryMenuTree',
+                type:'POST',
+                data:{id:roleId},
+                async:false,//必须设置false，同步请求，否则无效
+                dataType:'json',
+                success:function (datas) {
+                    content=datas;//把请求到的数据给变量
+                }
+            });
+            return content;
+        }
+
+        /**
+         * 获取选中的id记录信息
+         */
+        function getLayuiTreeIds(arr,list){
+            if(!list)list=[];
+            for(const  item of arr){
+                list.push(item.id);
+                let subs =item.children;
+                if(subs&& subs.length>0){
+                    getLayuiTreeIds(subs,list)
+                }
+            }
+            return list.join(',');//以逗号为分割进行封装返回
+        }
+
+        //按钮事件
+        util.event('lay-demo', {
+            getChecked: function(othis){
+                var checkedData = tree.getChecked('demoId1'); //获取选中节点的数据
+                //获取相关选中的记录id信息
+                let menus=getLayuiTreeIds(checkedData);
+                var ids=menus.toString();
+                //获取角色id
+                var roleId=$("#roleId").val();
+
+                //通过请求进行处理工作
+                $.ajax({
+                    url:"role/addPremSubmit",
+                    type:"POST",
+                    data:{ids:ids,roleId:roleId},
+                    success:function(result){
+                        //把json对象转string
+                        // result=JSON.parse(result);
+                        if(result.code==200){
+                            layer.msg("关联权限成功",{
+                                icon:6,
+                                time:500
+                            },function(){
+                                parent.window.location.reload();//重新页面
+                                var iframeIndex = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(iframeIndex);
+                            });
+
+                        }else{
+                            layer.msg("关联权限失败");
+                        }
+                    }
+                })
+
+            }
+            ,setChecked: function(){
+                tree.setChecked('demoId1', [12, 16]); //勾选指定节点
+            }
+            ,reload: function(){
+                //重载实例
+                tree.reload('demoId1', {
+
+                });
+
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>

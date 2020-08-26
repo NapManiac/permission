@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加部门</title>
+    <link rel="stylesheet"   th:href="@{../lib/layui-v2.5.5/css/layui.css}"   media="all">
+    <link rel="stylesheet"  th:href="@{../css/public.css}"   media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <input type="hidden" name="id" th:value="${menu.id}">
+    <input type="hidden" name="parentId" th:value="${menu.parentId}">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" lay-reqtext="名称不能为空" placeholder="请输入名称" th:value="${menu.name}" class="layui-input">
+        </div>
+    </div>
+    <!--如果不是按钮-->
+    <div class="layui-form-item" th:if="${menu.type} ne '2'">
+        <label class="layui-form-label " >URL</label>
+        <div class="layui-input-block" >
+            <input type="text" name="url"   placeholder="请输入连接" th:value="${menu.url}" class="layui-input">
+        </div>
+    </div>
+    <!--如果不是目录-->
+    <div class="layui-form-item" th:if="${menu.type} ne '0'">
+        <label class="layui-form-label ">权限标识</label>
+        <div class="layui-input-block" >
+            <input type="text" name="permission"   placeholder="请输入权限标识" th:value="${menu.permission}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label ">排序号</label>
+        <div class="layui-input-block">
+            <input type="number" name="sort"  placeholder="请输入排序号" th:value="${menu.sort}" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="updateBtn">确认修改</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{../lib/layui-v2.5.5/layui.js}"  charset="utf-8"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(updateBtn)', function (data) {
+            var datas =data.field;
+            console.log(datas);
+            //向后台发送数据并进行添加操作
+            $.ajax({
+                url:"../menu/updateMenuSubmit",
+                type:"POST",
+                data:datas,
+                success:function(result){
+                    //把json对象转string
+                    // result=JSON.parse(result);
+                    console.log(result)
+                    if(result.code==200){
+                        layer.msg("修改成功",{
+                            icon:6,
+                            time:500
+                        },function(){
+                                parent.window.location.reload();//重新页面
+                                var iframeIndex = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(iframeIndex);
+                        });
+
+                    }else{
+                        layer.msg("修改失败");
+                    }
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

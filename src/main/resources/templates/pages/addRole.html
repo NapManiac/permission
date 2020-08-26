@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>添加部门</title>
+    <link rel="stylesheet"   th:href="@{lib/layui-v2.5.5/css/layui.css}"   media="all">
+    <link rel="stylesheet"  th:href="@{css/public.css}"   media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <input type="hidden" name="parentId" th:value="${parentId}">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" lay-reqtext="名称不能为空" placeholder="请输入名称" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block" >
+            <input type="radio" name="type" value="0" title="分类" >
+            <input type="radio" name="type" value="1" title=角色 >
+        </div>
+    </div>
+ <!--备注-->
+    <div class="layui-form-item" >
+        <label class="layui-form-label ">备注</label>
+        <div class="layui-input-block">
+            <input type="text" name="remarks"   placeholder="请输入备注" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{lib/layui-v2.5.5/layui.js}"  charset="utf-8"></script>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var datas =data.field;
+            // console.log(datas);
+            //向后台发送数据并进行添加操作
+            $.ajax({
+                url:"role/addRoleSubmit",
+                type:"POST",
+                data:datas,
+                success:function(result){
+
+                    //把json对象转string
+                    // result=JSON.parse(result);
+                    console.log(result)
+                    if(result.code==200){
+                        layer.msg("添加成功",{
+                            icon:6,
+                            time:500
+                        },function(){
+                                parent.window.location.reload();//重新页面
+                                var iframeIndex = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(iframeIndex);
+                        });
+
+                    }else{
+                        layer.msg("添加失败");
+                    }
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fly.dao.MenuDao">
+    <insert id="addMenu">
+        insert into menu(parent_id,name,url,permission,type,create_time,sort)values
+        (#{parentId},#{name},#{url},#{permission},#{type},#{createTime},#{sort})
+    </insert>
+
+    <update id="updateMenuSubmit">
+        update menu
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+
+            <if test="url != null">
+                url = #{url},
+            </if>
+
+            <if test="permission != null">
+                permission = #{permission},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMenuByID">
+        delete from menu where id=#{id} or id in (SELECT t3.id FROM
+	        (SELECT *, IF (find_in_set(t1.parent_Id, @p) >0, @p:= concat(@p,',',id),0) AS childId FROM
+			    (SELECT id,parent_Id FROM menu t ORDER BY id) t1,
+                    (SELECT @p:= #{id}) t2 ) t3 WHERE	childId != 0) ;
+    </delete>
+
+    <select id="queryMenuAll" resultType="com.fly.po.Menu">
+        select * from menu
+    </select>
+
+    <select id="queryMenuByID" resultType="com.fly.po.Menu">
+        select * from menu where id=#{id}
+    </select>
+
+    <select id="queryMenuByRoleID" resultType="com.fly.po.RoleMenu">
+        select * from role_menu where role_id=#{id}
+    </select>
+
+    <select id="queryMenuTree" resultType="com.fly.po.Node">
+        select id ,name as title,parent_id from menu order by type
+    </select>
+
+</mapper>

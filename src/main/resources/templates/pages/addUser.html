@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>menu</title>
+    <link rel="stylesheet"   th:href="@{lib/layui-v2.5.5/css/layui.css}"   media="all">
+    <link rel="stylesheet"  th:href="@{css/public.css}"   media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">用户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="username" lay-verify="required" lay-reqtext="用户名不能为空" placeholder="请输入用户名" value="" class="layui-input">
+            <tip>填写自己管理账号的名称。</tip>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label ">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="realname"  lay-reqtext="姓名不能为空" placeholder="请输入姓名" value="" class="layui-input">
+        </div>
+    </div>
+
+    <!--部门下拉树 1个用户属于一个部门-->
+    <div class="layui-form-item">
+        <label  class="layui-form-label">部门</label>
+        <div class="layui-input-block">
+            <input type="text" id="deptId" name="deptId" lay-filter="tree" class="layui-input">
+        </div>
+    </div>
+    <!--角色下拉树 多选 1一个用户可以属于多个角色  1：n-->
+    <div class="layui-form-item">
+        <label  class="layui-form-label">角色</label>
+        <div class="layui-input-block">
+            <input type="text" id="roleId" name="roleId" lay-filter="tree2" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男" checked="">
+            <input type="radio" name="sex" value="女" title="女">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">手机</label>
+        <div class="layui-input-block">
+            <input type="number" name="tel" lay-verify="required" lay-reqtext="手机不能为空" placeholder="请输入手机" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-block">
+            <input type="email" name="email" placeholder="请输入邮箱" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">职业</label>
+        <div class="layui-input-block">
+            <input type="text" name="jobTitle" placeholder="请输入职业" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <input type="checkbox" checked="" name="status" lay-skin="switch" lay-filter="switchTest" lay-text="正常|禁用">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label ">排序号</label>
+        <div class="layui-input-block">
+            <input type="number" name="sort"   value="" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{lib/layui-v2.5.5/layui.js}"  charset="utf-8"></script>
+<script th:src="@{module/common.js}"  charset="utf-8"></script>
+<script>
+    layui.use(['treeSelect', 'form', 'layer'], function () {
+        var treeSelect = layui.treeSelect,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+
+        treeSelect.render({
+            // 选择器
+            elem: '#deptId',
+            // 数据
+            url: 'queryDeptTree',
+            // 请求头
+            headers: {},
+            // 异步加载方式：get/post，默认get
+            type: 'get',
+            // 占位符
+            placeholder: '修改默认提示信息',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            searchPlaceholder: '搜索',
+        });
+
+        //角色树
+        treeSelect.render({
+            // 选择器
+            elem: '#roleId',
+            // 数据
+            url: 'queryRoleTree',
+            // 异步加载方式：get/post，默认get
+            type: 'get',
+            // 占位符
+            placeholder: '占位符',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            searchPlaceholder: '搜索权限',
+            width: '350px',
+            setting: {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: false
+                    }
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)',function(data){
+            var datas=data.field;//获取数据信息
+            // console.log(datas);
+           //获取部门id
+            var dept=treeSelect.getSelectedNode("tree");
+            datas.deptId=dept[0].id;//获取选中的部门的id
+            var role=treeSelect.getCheckedNodes('tree2');
+            var list=[];
+            for(index in role){
+                 list.push(role[index].id);
+            }
+            datas.roleList=list;//角色id集合
+            if(datas.status=='on'){
+                datas.status=0;//正常
+            }else{
+                datas.status=1;//禁用
+            }
+            console.log(datas);
+            // return false;
+            //调用添加方法
+            addUserSubmit(datas,index);
+        });
+
+
+        /**
+         * 添加提交操作
+         */
+        function addUserSubmit(data,index){
+            $.ajax({
+                url:"user/addUserSubmit",
+                type:"POST",
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                success:function(result){
+                    //把json对象转string
+                    // result=JSON.parse(result);
+                    if(result.code==200){
+                        layer.msg("添加成功",{
+                            icon:6,
+                            time:500
+                        },function(){
+                            parent.window.location.reload();//重新页面
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        });
+
+                    }else{
+                        layer.msg("添加失败");
+                    }
+                }
+            })
+            return false;
+        };
+    });
+</script>
+</body>
+</html>

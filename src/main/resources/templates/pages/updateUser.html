@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>menu</title>
+    <link rel="stylesheet"   th:href="@{lib/layui-v2.5.5/css/layui.css}"   media="all">
+    <link rel="stylesheet"  th:href="@{css/public.css}"   media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <input type="hidden" name="id" th:value="${user.id}" >
+    <div class="layui-form-item">
+        <label class="layui-form-label required">用户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="username" lay-verify="required" th:value="${user.username}" class="layui-input">
+            <tip>填写自己管理账号的名称。</tip>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label ">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="realname"  th:value="${user.realname}" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男" th:field="*{user.sex}">
+            <input type="radio" name="sex" value="女" title="女" th:field="*{user.sex}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">手机</label>
+        <div class="layui-input-block">
+            <input type="number" name="tel" lay-verify="required" th:value="${user.tel}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-block">
+            <input type="email" name="email" th:value="${user.email}" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block" th:if="${user.status==0}">
+            <input type="checkbox" checked  name="status" lay-skin="switch" lay-filter="switchTest" lay-text="正常|禁用">
+        </div>
+        <div class="layui-input-block" th:if="${user.status==1}">
+            <input type="checkbox"  name="status" lay-skin="switch" lay-filter="switchTest" lay-text="正常|禁用">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="updateBtn">确认修改</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{lib/layui-v2.5.5/layui.js}"  charset="utf-8"></script>
+<script th:src="@{module/common.js}"  charset="utf-8"></script>
+<script>
+    layui.use(['treeSelect', 'form', 'layer'], function () {
+        var treeSelect = layui.treeSelect,
+            form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer;
+        //监听提交
+        form.on('submit(updateBtn)',function(data){
+            var datas=data.field;//获取数据信息
+
+            if(datas.status=='on'){
+                datas.status=0;//正常
+            }else{
+                datas.status=1;//禁用
+            }
+            console.log(datas);
+            //调用添加方法
+            updateUserSubmit(datas);
+        });
+
+
+        /**
+         * 修改提交操作
+         */
+        function updateUserSubmit(data){
+            $.ajax({
+                url:"user/updateUserSubmit",
+                type:"POST",
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                success:function(result){
+                    //把json对象转string
+                    // result=JSON.parse(result);
+                    if(result.code==200){
+                        layer.msg("修改成功",{
+                            icon:6,
+                            time:500
+                        },function(){
+                            parent.window.location.reload();//重新页面
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        });
+
+                    }else{
+                        layer.msg("修改失败");
+                    }
+                }
+            })
+            return false;
+        };
+    });
+</script>
+</body>
+</html>

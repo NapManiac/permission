@@ -1,0 +1,88 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 1000,
+  "data": [
+    {
+          "id": 10000,
+          "username": "kappy",
+           "realname": "name1",
+           "dept": "销售部",
+          "sex": "女",
+          "tel": "13023455632",
+          "status": "正常"
+        },
+    {
+          "id": 10001,
+          "username": "user-0",
+           "realname": "name1",
+           "dept": "销售部",
+          "sex": "女",
+          "tel": "13023455632",
+          "status": "正常"
+        },
+    {
+          "id": 10002,
+          "username": "user-0",
+           "realname": "name1",
+           "dept": "销售部",
+          "sex": "女",
+          "tel": "13023455632",
+          "status": "正常"
+        },
+    {
+          "id": 10003,
+          "username": "user-0",
+           "realname": "name1",
+           "dept": "销售部",
+          "sex": "女",
+          "tel": "13023455632",
+          "status": "正常"
+        },
+   {
+         "id": 10005,
+         "username": "user-0",
+          "realname": "name1",
+          "dept": "销售部",
+         "sex": "女",
+         "tel": "13023455632",
+         "status": "正常"
+       },
+   {
+         "id": 10006,
+         "username": "user-0",
+          "realname": "name1",
+          "dept": "销售部",
+         "sex": "女",
+         "tel": "13023455632",
+         "status": "正常"
+       },
+  {
+        "id": 10007,
+        "username": "user-0",
+         "realname": "name1",
+         "dept": "销售部",
+        "sex": "女",
+        "tel": "13023455632",
+        "status": "正常"
+      },
+   {
+         "id": 10008,
+         "username": "user-0",
+          "realname": "name1",
+          "dept": "销售部",
+         "sex": "女",
+         "tel": "13023455632",
+         "status": "正常"
+       },
+   {
+         "id": 10009,
+         "username": "user-0",
+          "realname": "name1",
+          "dept": "销售部",
+         "sex": "女",
+         "tel": "13023455632",
+         "status": "正常"
+       }
+  ]
+}

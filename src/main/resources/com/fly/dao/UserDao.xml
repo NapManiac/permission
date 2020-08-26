@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fly.dao.UserDao">
+    <insert id="addUser">
+        <!--获取新增记录的id-->
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            select last_insert_id()
+        </selectKey>
+        insert into user(dept_id, username, realname, sex, tel, email, job_title, status, sort, password) values
+        (#{deptId}, #{username}, #{realname}, #{sex}, #{tel}, #{email}, #{jobTitle}, #{status}, #{sort}, '123456')
+    </insert>
+
+    <insert id="addUserRole">
+        insert into user_role(role_id, user_id)values
+        <foreach collection="list" item="userRole" separator="," index="index">
+            (#{userRole.roleId}, #{userRole.userId})
+        </foreach>
+    </insert>
+
+    <update id="updateUserSubmit">
+        update user
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="realname != null and realname != ''">
+                realname = #{realname},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex},
+            </if>
+            <if test="tel! = null and tel != ''">
+                tel = #{tel},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserByIds">
+        delete from user where id in
+        <foreach collection="list" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <delete id="deleteUserRoleByUserIds">
+        delete from user_role where user_id in
+        <foreach collection="list" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <select id="queryUserAll" resultType="com.fly.po.User">
+        select u.id, u.realname, u.username, u.sex, u.tel, u.status, d.name as dname
+        from user u left join dept d on u.dept_id=d.id
+        <where>
+            <if test="username != null and username != ''">
+                and username like '%${username}%'
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel like '%${tel}%'
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="queryUserById" resultType="com.fly.po.User">
+        select * from user where id = #{id}
+    </select>
+
+    <select id="queryUserInfoByNameAndPwd" resultType="com.fly.po.User">
+        select * from user where username=#{username} and password=#{password}
+    </select>
+</mapper>
