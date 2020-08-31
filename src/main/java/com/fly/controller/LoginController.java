@@ -5,6 +5,11 @@ import com.fly.codeutil.SimpleCharVerifyCodeGenImpl;
 import com.fly.codeutil.VerifyCode;
 import com.fly.po.User;
 import com.fly.service.UserService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,33 +67,55 @@ public class LoginController {
     @RequestMapping("/loginIn")
     public String loginIndex(HttpServletRequest request, Model model){
         //获取用户
-        String username = request.getParameter("username");
+        String username=request.getParameter("username");
         //获取密码
-        String password = request.getParameter("password");
+        String password=request.getParameter("password");
         //验证码
-        String code = request.getParameter("code");
-
+        String code=request.getParameter("code");
+        System.out.println(code);
         //验证登录是否超时
         HttpSession session=request.getSession();
-        if(session == null){
+        if(session==null){
             model.addAttribute("msg","session 超时了");
             return "login";
         }
         //获取真正的验证码
         String trueCode= (String) session.getAttribute("VerifyCode");
+        System.out.println(trueCode);
         if(!trueCode.toLowerCase().equals(code.toLowerCase())){//不区分大小写判断输入的验证码和真实的验证码是否一致
             model.addAttribute("msg","验证码不正确，请重新输入...");
             return "login";
         }
 
         //判断用户名和密码是否正确
-        User user = userService.queryUserInfoByNameAndPwd(username,password);
-        if(user == null){//如果该用户存在 登录到主页
-            model.addAttribute("msg", "用户名密码不正确");
-            return "login";
+        //1 获取subject
+        Subject subject= SecurityUtils.getSubject();
+        //2、封装用户数据
+        UsernamePasswordToken token= new UsernamePasswordToken(username,password);
+        //3 执行登录方法
+        try {
+            subject.login(token);
+            User user= (User) subject.getPrincipal();
+            session.setAttribute("user",user);
+            //跳转到成功页面
+            return "redirect:/index";
+        }catch (UnknownAccountException ex){
+            model.addAttribute("msg","用户名不存在");
+            return "pages/login";
+        }catch (IncorrectCredentialsException exs){
+            model.addAttribute("msg","密码不正确");
+            return "pages/login";
         }
-        session.setAttribute("user", user);
-        return "redirect:/index";
+
+//        //判断用户名和密码是否正确
+//        User user = userService.queryUserInfoByNameAndPwd(username,password);
+//        if(user == null){//如果该用户存在 登录到主页
+//            model.addAttribute("msg", "用户名密码不正确");
+//            return "login";
+//        }
+//        System.out.println("**********************************");
+//        session.setAttribute("user", user);
+//        return "redirect:/index";
     }
 
 

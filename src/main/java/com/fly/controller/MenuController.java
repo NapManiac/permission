@@ -1,8 +1,7 @@
 package com.fly.controller;
 
-import com.fly.po.Menu;
-import com.fly.po.Node;
-import com.fly.po.RoleMenu;
+import com.alibaba.fastjson.JSON;
+import com.fly.po.*;
 import com.fly.service.MenuService;
 import com.fly.util.JsonObject;
 import com.fly.util.R;
@@ -13,8 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class MenuController {
@@ -93,8 +95,7 @@ public class MenuController {
             }
         }
         //组装树结构
-        String result = treeBuilder.buildTree(list);
-        return result;
+        return treeBuilder.buildTree(list);
     }
 
 
@@ -138,5 +139,43 @@ public class MenuController {
         return "pages/addMenu";
     }
 
+    /**
+     * 根据用户id查询导航树
+     */
+    @RequestMapping("/menuTree")
+    @ResponseBody
+    public Object MenuNavTree(HttpSession session){
+        //获取登录用户对象
+        User user= (User) session.getAttribute("user");
+        //根据id获取菜单
+        List<NavNode> obj=menuService.queryNavNodeListTree(user.getId());
+        System.out.println(user);
+
+        //拼接数据
+        Map map=new HashMap<>();
+        //设置home
+        Map home=new HashMap<>();
+        home.put("title","系统管理");
+        home.put("href","pages/welcome.html");
+        map.put("homeInfo",home);
+
+        //logoInfo
+        Map logo=new HashMap<>();
+        logo.put("title","后台管理");
+        logo.put("image","images/logo.png");
+        logo.put("href","");
+        map.put("logoInfo",logo);
+
+        //设置导航数据
+        //1 转成树结构
+        obj= treeBuilder.buildTree(obj);
+        for (NavNode n :
+                obj) {
+            System.out.println(n);
+        }
+        map.put("menuInfo",obj);
+        System.out.println(JSON.toJSON(map));
+        return map;
+    }
 
 }

@@ -53,4 +53,27 @@
         select id ,name as title,parent_id from menu order by type
     </select>
 
+    <select id="queryNavNodeListTree" resultType="com.fly.po.NavNode">
+        SELECT
+            m.id,
+            m.parent_id,
+            m.`name` AS title,
+            m.url AS href
+        FROM
+            USER u,
+                user_role ur,
+                role_menu rm,
+                menu m,
+                role r
+        WHERE
+            u.id = ur.user_id
+            AND ur.role_id = r.id
+            AND rm.role_id = r.id
+            AND m.id = rm.menu_id
+            AND m.type IN (1, 3, 0)
+        <if test="id!=null">
+            AND u.id = #{id}
+        </if>
+    </select>
+
 </mapper>

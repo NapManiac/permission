@@ -1,6 +1,7 @@
 package com.fly.dao;
 
 import com.fly.po.Menu;
+import com.fly.po.NavNode;
 import com.fly.po.Node;
 import com.fly.po.RoleMenu;
 import org.springframework.stereotype.Component;
@@ -43,4 +44,9 @@ public interface MenuDao {
      * 获取树结构的菜单
      */
     List<Node> queryMenuTree();
+
+    /**
+     * 根据id获取关联的菜单信息
+     */
+    List<NavNode> queryNavNodeListTree(Integer id);
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>menu</title>
@@ -14,11 +14,6 @@
     </style>
 </head>
 <body>
-<script type="text/html" id="toolbarDemo">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="getCheakData">添加角色</button>
-    </div>
-</script>
 <div class="layuimini-container">
     <div class="layuimini-main">
 
@@ -34,13 +29,13 @@
 <!-- 操作列 -->
 <script type="text/html" id="auth-state">
     {{# if (d.type=='0'){ }}
-    <a class="layui-btn layui-btn-xs" lay-event="add">添加</a>
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="add" shiro:hasPermission="role:insert">添加</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" shiro:hasPermission="role:update">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" shiro:hasPermission="role:delete">删除</a>
     {{# }else{ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="perm">关联权限</a>
-    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="perm" shiro:hasPermission="add:permission">关联权限</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" shiro:hasPermission="role:update">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" shiro:hasPermission="role:delete">删除</a>
     {{# } }}
 </script>
 

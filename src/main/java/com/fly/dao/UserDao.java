@@ -47,4 +47,14 @@ public interface UserDao {
      */
     User queryUserInfoByNameAndPwd(@Param("username") String username, @Param("password") String password);
 
+    /**
+     * 根据用户的id查询用户权限和url标识
+     */
+    List<User> findUrlAndPermByUserID(Integer id);
+
+    /**
+     * 根据用户名查询用户信息
+     */
+    User queryUserByUserName(String name);
+
 }

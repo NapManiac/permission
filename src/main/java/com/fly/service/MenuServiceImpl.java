@@ -2,6 +2,7 @@ package com.fly.service;
 
 import com.fly.dao.MenuDao;
 import com.fly.po.Menu;
+import com.fly.po.NavNode;
 import com.fly.po.Node;
 import com.fly.po.RoleMenu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,10 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<Node> queryMenuTree() {
         return menuDao.queryMenuTree();
+    }
+
+    @Override
+    public List<NavNode> queryNavNodeListTree(Integer id) {
+        return menuDao.queryNavNodeListTree(id);
     }
 }

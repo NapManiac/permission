@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component("treeBuilder")
-public class TreeBuilder {
+public class TreeBuilder<T extends Node> {
     List<Node> nodes = new ArrayList<>();
 
-    public String buildTree(List<Node> nodes) {
+    public List<Node> buildTree(List<Node> nodes) {
         TreeBuilder treeBuilder = new TreeBuilder(nodes);
-        return treeBuilder.buildJSONTree();
+        return treeBuilder.buildTree();
     }
 
     public TreeBuilder() {}

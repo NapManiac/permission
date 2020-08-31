@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class Role implements Serializable {
@@ -15,4 +16,6 @@ public class Role implements Serializable {
     private Integer createBy;
     private Date createTime;
     private Date updateTime;
+
+    private List<Menu> menuList;
 }

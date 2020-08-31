@@ -14,4 +14,5 @@ public class Node {
     private String title;
     private List<Node> children;
     private Boolean checked;//是否选中
+
 }
